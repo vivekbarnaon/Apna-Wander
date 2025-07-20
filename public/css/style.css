@@ -4,7 +4,7 @@
 }
 
 .navbar-brand {
-  color: tomato;
+  color: rgb(117, 206, 218);
   font-size: 2rem;
   margin-left: 5px;
   font-family: "Times New Roman", Times, serif;
@@ -12,12 +12,12 @@
 
 .navbar-brand:hover {
   /* background-color: transparent !important; */
-  color: tomato;
+  color: rgb(145, 138, 137);
   text-decoration: none;
 }
 
 .nav-item {
-  color: black;
+  color: rgb(139, 79, 79);
 }
 
 .text-body {
@@ -65,7 +65,7 @@
 }
 
 .btn {
-  background-color: tomato;
+  background-color: rgb(71, 218, 255);
   border: none;
 }
 
