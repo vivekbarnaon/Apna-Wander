@@ -1,0 +1,226 @@
+<% layout('layouts/boilerplate') %>
+
+<!-- Details of listing -->
+<body>
+  <div class="row mt-3">
+    <div class="offset-3 mt-3" style="padding-left: 1.5rem">
+      <h5 class="card-title col-6"><%= list.title %></h5>
+    </div>
+    <div class="card offset-3 mt-3" style="width: 34rem">
+      <!-- <h5 class="card-title col-6"><%= list.title %></h5> -->
+      <img
+        class="card-img-top"
+        style="width: 34rem; height: 20rem"
+        src="<%= list.image.url %>"
+        alt="Listin_image"
+      />
+      <div class="card-body mt-3" style="padding-left: 1.5rem">
+        <p class="card-text">Owned by <%= list.owner.username %></p>
+        <p class="card-text"><%= list.description %></p>
+        <p class="card-text">
+          &#8377; <%= (list.price).toLocaleString("en-IN") %>
+        </p>
+        <p class="card-text"><%= list.location %> ,<%= list.country %></p>
+      </div>
+    </div>
+
+    <!-- Buttons for editing and deleting -->
+    <% if(currUser && currUser.equals(list.owner._id)) { %>
+    <div id="detailBtn" class="row">
+      <form method="get" action="/listing/<%=list._id %>/edit">
+        <button id="detailEdit" class="btn btn-dark col-1 offset-3">
+          Edit
+        </button>
+      </form>
+      <form
+        method="post"
+        action="/listing/<%=list._id %>/delete?_method=delete"
+      >
+        <button id="detailDel" class="btn btn-dark col-1 offset-3">
+          Delete
+        </button>
+      </form>
+    </div>
+    <% } %>
+
+    <!-- Form for Submiting a review -->
+    <hr class="mt-3 col-6 offset-3" />
+    <div class="row">
+      <form
+        method="post"
+        action="/listings/<%= list._id %>/review"
+        novalidate
+        class="needs-validation"
+      >
+        <h2 class="col-6 offset-3">Reviews</h2>
+        <div class="col-6 offset-3">
+          <label for="rating" class="form-label">Rating</label>
+          <!-- <input
+            type="range"
+            name="review[rating]"
+            value="3"
+            min="1"
+            max="5"
+            class="form-control"
+          /> -->
+
+          <fieldset class="starability-slot">
+            <input
+              type="radio"
+              id="no-rate"
+              class="input-no-rate"
+              name="review[rating]"
+              value="1"
+              checked
+              aria-label="No rating."
+              required
+            />
+            <input
+              type="radio"
+              id="first-rate1"
+              name="review[rating]"
+              value="1"
+            />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input
+              type="radio"
+              id="first-rate2"
+              name="review[rating]"
+              value="2"
+            />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input
+              type="radio"
+              id="first-rate3"
+              name="review[rating]"
+              value="3"
+            />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input
+              type="radio"
+              id="first-rate4"
+              name="review[rating]"
+              value="4"
+            />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input
+              type="radio"
+              id="first-rate5"
+              name="review[rating]"
+              value="5"
+            />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+          </fieldset>
+        </div>
+
+        <div class="col-6 offset-3">
+          <label for="comments" class="form-label">Comments</label>
+          <textarea
+            name="review[comments]"
+            class="form-control"
+            placeholder="Enter comments here."
+            required
+          ></textarea>
+          <div class="invalid-feedback">please enter comment to submit.</div>
+        </div>
+        <button class="btn mt-3 col-1 offset-3 btn-dark">Submit</button>
+      </form>
+    </div>
+
+    <!-- Showcasing of review -->
+    <% if(list.review && list.review.length > 0) { %>
+    <hr class="mt-3 col-6 offset-3" />
+    <h2 class="offset-3">All reviews</h2>
+    <div class="row row-cols-lg-3 col-8 offset-3">
+      <% for(let review of list.review){ %>
+      <div
+        class="card border border-dark rounded mt-3"
+        style="width: 18rem; margin-right: 2rem; margin-bottom: 2rem"
+      >
+        <div class="card-body m-3">
+          <h5 class="card-title">@<%= review.author.username %></h5>
+          <p
+            class="card-text starability-result"
+            data-rating="<%= review.rating %>"
+          >
+            Rated: <%= review.rating %> stars
+          </p>
+          <p class="card-text"><%= review.comments %></p>
+
+          <% if(currUser && currUser._id.equals(review.author._id)){ %>
+          <form
+            method="post"
+            action="/listings/<%= list._id %>/review/<%= review._id %>?_method=DELETE"
+          >
+            <button id="detailDel" class="btn btn-dark">Delete</button>
+          </form>
+          <% } %>
+        </div>
+      </div>
+      <%}%>
+    </div>
+    <% } %>
+
+    <!-- For Map -->
+    <div class="mt-3 col-8 offset-2">
+      <hr />
+      <h3>Where you’ll be</h3>
+      <br />
+      <div id="map"></div>
+      <script>
+        async function geocodeLocation(locationName) {
+          const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            locationName
+          )}`;
+          try {
+            const response = await fetch(url, {
+              headers: {
+                "User-Agent": "YourAppName/1.0 (your@email.com)", // recommended by Nominatim
+              },
+            });
+            const data = await response.json();
+            if (data.length > 0) {
+              return {
+                lat: parseFloat(data[0].lat),
+                lon: parseFloat(data[0].lon),
+              };
+            } else {
+              throw new Error("Location not found");
+            }
+          } catch (error) {
+            console.error("Geocoding error:", error);
+            return null;
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+          const loc = <%- JSON.stringify(list.location +","+ list.country) %>;
+
+          const map = L.map("map", {
+            center: [51.505, -0.09],
+            zoom: 10,
+          });
+
+          L.marker([51.505, -0.09]).addTo(map);
+
+          L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}", {
+            foo: "bar",
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          }).addTo(map);
+
+          try {
+            const coords = await geocodeLocation(loc);
+            if (coords) {
+              const { lat, lon } = coords;
+              map.setView([lat, lon], 9);
+              L.marker([lat, lon]).addTo(map).bindPopup(loc).openPopup();
+            }
+          } catch (error) {
+            console.error("Geocoding failed:", error);
+          }
+        });
+      </script>
+    </div>
+  </div>
+</body>
