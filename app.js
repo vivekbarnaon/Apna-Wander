@@ -16,7 +16,8 @@ const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const User = require("./models/user");
 const passport = require("passport");
-const { isLoggedIn, saveRedirectUrl, ownerListing, validateListing } = require("./middleware");
+// Comment out middleware import
+// const { isLoggedIn, saveRedirectUrl, ownerListing, validateListing } = require("./middleware");
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");

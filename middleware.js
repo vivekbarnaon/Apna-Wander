@@ -1,68 +1,46 @@
-const listing = require("./models/listings");
-const {listingEditSchema, listingSchema,reviewSchema} = require("./schema");
+const Listing = require("./models/listings");
 const ExpressError = require("./utils/ExpressError");
+const { listingSchema, reviewSchema } = require("./schema");
 
-// const passport = require("passport");
-
-module.exports.isLoggedIn = (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    if(req.method === 'GET'){
+const isLoggedIn = (req, res, next) => {
+    if(!req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
+        req.flash("error", "You must be logged in!");
+        return res.redirect("/login");
     }
-    req.flash("error", "You must logged in to do changes");
-    return res.redirect("/login");
-  }
-  next();
+    next();
 };
 
-module.exports.saveRedirectUrl = (req, res, next) => {
-  if (req.session.redirectUrl) {
-    res.locals.redirectUrl = req.session.redirectUrl;
-  }
-  next();
+const saveRedirectUrl = (req, res, next) => {
+    if(req.session.redirectUrl) {
+        res.locals.redirectUrl = req.session.redirectUrl;
+    }
+    next();
 };
 
-module.exports.ownerListing = async (req, res, next) => {
-  let { id } = req.params;
-  let list = await listing.findById(id);
-  if (!list.owner._id.equals(req.user._id)) {
-    req.flash("error", "You are not the owner of this listing");
-    return res.redirect(`/listing/${id}`);
-  }
-  next();
+const ownerListing = async(req, res, next) => {
+    let { id } = req.params;
+    let listing = await Listing.findById(id);
+    if(!listing.owner.equals(req.user._id)) {
+        req.flash("error", "You don't have permission!");
+        return res.redirect(`/listing/${id}`);
+    }
+    next();
 };
 
-// middleWare for listing
-module.exports.validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  // console.log(result);
-  if(!req.file){
-    throw new ExpressError(400, "Image is required");
-  }
-  if (error) {
-    const msg = error.details.map(el => el.message).join(", ");
-    throw new ExpressError(400, msg);
-  }
-  next();
+const validateListing = (req, res, next) => {
+    let {error} = listingSchema.validate(req.body);
+    if(error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
 };
 
-// MiddleWare for edit listing
-module.exports.validateEditListing = (req, res, next) => {
-  let { error } = listingEditSchema.validate(req.body.listing);
-  // console.log(result);
-  if (error) {
-    const msg = error.details.map(el => el.message).join(", ");
-    throw new ExpressError(400, msg);
-  }
-  next();
-};
-
-// middleware for review
-module.exports.validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body.review);
-  // console.log(result);
-  if (error) {
-    throw new ExpressError(400, error);
-  }
-  next();
+module.exports = {
+    isLoggedIn,
+    saveRedirectUrl,
+    ownerListing,
+    validateListing
 };
