@@ -39,5 +39,31 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- Leaflet Control Geocoder JS -->
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <!-- Firebase Analytics -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js"></script>
+    <!-- Optional: Add other Firebase services that you want to use -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script> -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script> -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"></script> -->
+    
+    <!-- Initialize Firebase -->
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDJL64Ivdw7-xxQ6g1gEJKRAz3Rfdg7qzs",
+        authDomain: "apana-wander.firebaseapp.com",
+        projectId: "apana-wander",
+        storageBucket: "apana-wander.firebasestorage.app",
+        messagingSenderId: "563059978656",
+        appId: "1:563059978656:web:039fb2a4492157127db4c5",
+        measurementId: "G-RH8BBHYC7Y"
+      };
+      
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const analytics = firebase.analytics();
+    </script>
   </body>
 </html>

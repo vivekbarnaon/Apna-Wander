@@ -5,7 +5,7 @@ const router = express.Router();
 const controller = require("../controllers/listings");
 const multer = require("multer");
 const {storage} = require("../cloudConfig");
-const upload = multer({ storage });
+ const upload = multer({ storage });
 
 // Show route for listing
 // create route for adding to a list

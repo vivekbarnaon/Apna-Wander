@@ -1,8 +1,13 @@
+
+// Load environment variables
 require("dotenv").config();
 
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+
+// Firebase configuration can be imported if needed in routes
+// const firebaseConfig = require("./firebaseConfig");
 const listing = require("./models/listings");
 const path = require("path");
 const methodOverride = require("method-override");
@@ -29,8 +34,10 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "/public")));
 
-const dbUrl = process.env.dbUrl;
-const secretCode = process.env.SECRET;
+// Get MongoDB URL from environment variable
+// You'll need to replace <db_password> with your actual password in the .env file
+const dbUrl = process.env.dbUrl || "mongodb://127.0.0.1:27017/Wanderer";
+const secretCode = process.env.SECRET || "thisIsASecretCode";
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
@@ -41,7 +48,7 @@ const store = MongoStore.create({
 })
 
 store.on("error",(err)=>{
-  console.log("Something went wrong in Atlas database",err);
+  console.log("Something went wrong in MongoDB database", err);
 })
 
 const sessionOptions = {
@@ -74,6 +81,7 @@ main()
 
 async function main() {
   await mongoose.connect(dbUrl);
+  console.log("Connected to MongoDB at:", dbUrl);
 }
 
 // middleWare for flash messages(to store in local)
@@ -97,10 +105,9 @@ app.use("/",userRouter);
 
 app.use("/listings",reviewRouter);
 
-// Error handling
-app.all("*any", (req, res, next) => {
+// Error handling for 404 routes
+app.use((req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
-  // res.status(statusCode).send(message);
 });
 
 app.use((err, req, res, next) => {

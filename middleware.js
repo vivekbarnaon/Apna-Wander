@@ -38,9 +38,37 @@ const validateListing = (req, res, next) => {
     }
 };
 
+const validateEditListing = (req, res, next) => {
+    const { listing } = req.body;
+    // If no listing data is provided in the request body
+    if (!listing) {
+        return next(); // Skip validation as image-only update
+    }
+    
+    let {error} = listingSchema.validate(listing);
+    if(error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
+};
+
+const validateReview = (req, res, next) => {
+    let {error} = reviewSchema.validate(req.body.review);
+    if(error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
+};
+
 module.exports = {
     isLoggedIn,
     saveRedirectUrl,
     ownerListing,
-    validateListing
+    validateListing,
+    validateEditListing,
+    validateReview
 };
