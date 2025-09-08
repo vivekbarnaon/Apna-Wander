@@ -34,8 +34,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "/public")));
 
-// Get MongoDB URL from environment variable
-// You'll need to replace <db_password> with your actual password in the .env file
+
 const dbUrl = process.env.dbUrl || "mongodb://127.0.0.1:27017/Wanderer";
 const secretCode = process.env.SECRET || "thisIsASecretCode";
 

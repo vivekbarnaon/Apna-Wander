@@ -15,7 +15,7 @@
         alt="Listin_image"
       />
       <div class="card-body mt-3" style="padding-left: 1.5rem">
-        <p class="card-text">Owned by <%= list.owner.username %></p>
+        <p class="card-text">Owned by <%= list.owner ? list.owner.username : 'Unknown' %></p>
         <p class="card-text"><%= list.description %></p>
         <p class="card-text">
           &#8377; <%= (list.price).toLocaleString("en-IN") %>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Buttons for editing and deleting -->
-    <% if(currUser && currUser.equals(list.owner._id)) { %>
+    <% if(currUser && list.owner && currUser.equals(list.owner._id)) { %>
     <div id="detailBtn" class="row">
       <form method="get" action="/listing/<%=list._id %>/edit">
         <button id="detailEdit" class="btn btn-dark col-1 offset-3">

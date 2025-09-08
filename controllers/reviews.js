@@ -6,12 +6,11 @@ module.exports.createReview = async (req, res) => {
   const list = await listing.findById(id);
   let newReview = new Review(req.body.review);
   newReview.author = res.locals.currUser;
-  console.log(newReview);
   list.review.push(newReview);
   await newReview.save();
   await list.save();
   req.flash("success", "New Review Created");
-  res.redirect(`/listing/${id}`);
+  res.redirect(`/listing`);
 };
 
 module.exports.destroyReview = async (req, res) => {
