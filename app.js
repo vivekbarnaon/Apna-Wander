@@ -6,8 +6,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 
-// Firebase configuration can be imported if needed in routes
-// const firebaseConfig = require("./firebaseConfig");
+
 const listing = require("./models/listings");
 const path = require("path");
 const methodOverride = require("method-override");
